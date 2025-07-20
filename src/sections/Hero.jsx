@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { calculateSizes } from '../constants';
 import { Canvas } from '@react-three/fiber';
@@ -6,6 +6,7 @@ import CanvasLoader from '../components/CanvasLoader';
 import { Leva } from 'leva';
 import { PerspectiveCamera } from '@react-three/drei';
 import HeroCamera from '../components/HeroCamera';
+import { MonitorBener } from '../components/MonitorBener';
 
 const Hero = () => {
   const isSmall = useMediaQuery({ maxWidth: 440 });
@@ -29,7 +30,12 @@ const Hero = () => {
             <Leva hidden />
             <PerspectiveCamera makeDefault position={[0, 0, 30]} />
 
-            <HeroCamera></HeroCamera>
+            <HeroCamera isMobile={isMobile}>
+              <MonitorBener scale={ukuran.deskScale} position={ukuran.deskPosition} rotation={[0.1, Math.PI, 0]} />
+            </HeroCamera>
+
+            <ambientLight intensity={1} />
+            <directionalLight position={[10, 10, 10]} intensity={0.5} />
           </Suspense>
         </Canvas>
       </div>
