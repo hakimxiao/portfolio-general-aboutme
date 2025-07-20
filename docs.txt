@@ -1,0 +1,160 @@
+OBJECT 3D
+    A. Set UP :
+        1.  npm i three @react-three/fiber @react-three/drei react-responsive leva
+        2.  tambahkan <Canvas /> sebagai Pembungkus object.
+        3.  di dalam <Canvas /> tambahkan <Camera /> contoh <PerspectiveCamera /> camera dengan gaya mata manusia
+        4.  sesudah <Camera /> Silahkan tambahkan Object 3D
+
+    B. Cara Download Konversi Dan Pasang Model 3D :
+        1.  kunjungi https://sketchfab.com
+        2.  download model dengan format glTF .gltf
+        3.  gunakan converter online ini https://gltf.pmnd.rs/
+        4.  setelah di rubah ke bentuk three fiber react copy code nya
+            simpan di component lain dan panggil component tersebut di dalam
+            <Canvas />
+        5.  jangan copy langsung code nya untuk cpy ada di menu edit.
+
+    C. Cara Set Up Object
+        1.  Setelah di copy code three fiber nya
+        2.  dibagian akhir useGLTF. ini kita isi di bagian path nya
+            file.gltf yang kita download di sketchfab.
+
+            Notice : kalo mr adrian dia menggunaakan .glb
+
+    D. Set Up Canvas :
+        1.  tambahkan di dalam <Canvas /> <Suspense fallback={null} />
+        2.  buat components Loading.tsx yang isinya :
+                import {Html, useProgress} from "@react-three/drei";
+
+                const Loading = () => {
+
+                    const {progress} = useProgress();
+
+                    return (
+                        <Html
+                            as="div"
+                            center
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexDirection: "column"
+                            }}
+                        >
+                            <span className="canvas-loader" />
+                            <p style={{fontSize: 14, color: "#F1F1F1", fontWeight: 800, marginTop: 40}}>
+                                {progress !== 0 ? `${progress.toFixed(2)}%` : 'Loading ...'}
+                            </p>
+                        </Html>
+                    )
+                }
+                export default Loading
+
+        **  Kode di atas sangat sangat penting karena jika kita merender sebuah canvas dengan animasi
+            akan blank solusinya adalah dengan setUp canvas.
+
+            hasilnya akan seperti ini tapi masih error di object 3D nya :
+                 <Canvas className="w-full h-full">
+                    <Suspense fallback={<Loading />}>
+                        <PerspectiveCamera makeDefault position={[0, 0, 30]}/>
+                        <HackerRoom />
+                    </Suspense>
+
+                 </Canvas>
+
+    E. 3D Object Error Handle
+        1.  Masuk ke code react di component object nya
+        2.  penyebab error nya adalah di geometry dan material, jika kita scroll ke atas di
+            useState GLTF maka disana akan ada path yang masih default dari code awal.
+        3.  cukup edit path nya dan disamakan dengan bagian akhir yaitu path dari useGLTF di bagian
+            akhir.
+
+        INI BELUM SEPENUHNYA SELESAI, AKAN ERROR LAGI. SOLUSINYA
+            1.  Masuk di <Canvas /> dan pada pemanggilan component object 3D nya kita
+                tambahkan scale={0.05} position{[0, 0, 0]} rotation={[0, -Math.PI / 2, 0]}
+
+
+
+LANGKAH MENAMBAHKAN OBJECT LOGO REACT
+    1.  Kunjungi sketchfab ambil logo yang berformatkan .gltf
+    2.  Drag and drop file nya ke https://gltf.pmnd.rs/
+    3.  Copy semua code yang disediakan ke dalam file component
+    4.  ubah bagian useGLTF yang ada di awalan dengan file yang kita simpan di public
+        yaitu dari sketchfab juga file yang sama hanya saja format nya .glb
+        ubah juga di useGLTF.preload dibawah samakan juga path nya.
+    5.  rename ulang nama Component sesuaikan dengan nama file.
+    6.  tambahkan float di return pembalutnya <Float > from drei
+            <Float> adalah komponen dari @react-three/drei yang digunakan untuk memberikan efek "melayang" atau animasi 
+            lembut pada objek 3D dalam scene kamu. Ini seperti efek benda yang terapung-apung di udara, seperti balon atau planet.
+
+
+COBALAH EXPLORE 3D OBJECT DI NPM
+    *   Disini kita mendapatkan free 3D globe dari npm
+    *   Dan tinggal dipasang saja di dalam div tanpa manual buat canvas dan light
+    *   Kita hanya tinggal atur properti saja
+    MUDAH KAN.
+
+    CONTOH :
+
+        <Globe 
+            height={326}
+            width={326}
+            backgroundColor="rgba(0,0,0,0)"
+            backgroundImageOpacity={0.5}
+            showAtmosphere
+            showGraticules
+            globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
+            bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+            labelsData={[{
+                lat: -2.9909, lng: 104.7566,
+                text: "I'm here !",
+                color: 'white',
+                size: 20
+            }]}
+        />
+
+    *   labelsData digunakan untuk melakukkan editing di object 
+
+
+LAKUKKAN HAL INI JIKA INGIN MEMBUAT OBJECT : 
+    1. BUNGKUS DIA DI DALAM TAG div
+    2. BUNGKUS SEMUA 3D OBJECT BAIK CAMERA DLL DI DALAM Canvas
+    3. BERIKAN CAHAYA, BEBAS TIDAK HARUS 1
+    3. GUNAKAN CENTER DARI DREI UNTUK MENGATR OBJECT KE TENGAH
+    4. KARENA OBJECT BUTUH RENDER SAAT WEB DIJALANKAN GUNAKAN SUSPENSE UNTUK MELAKUKKAN RENDER
+       DAN KITA PASANG FALLBACK UNTUK MEMBERIKAN animasi
+    5. BUAT TAG HTML GROUP
+    6. DIDALAM GROUP MASUKKAN COMPONENT 3D YANG KITA BUAT
+    7. DI BAWAH TAG CENTER PASANG ORBIT CONTROL DENGAN ATTRIBUTE maxPolarAngle={Math.PI / 2} AGAR
+       KITA DAPAT MEMUTAR ZOOM IN DAN OUT OBJECT
+
+       CONTOH : 
+            <div className="border border-black-300 bg-black-200 rounded-lg h-96 md:h-full">
+                <Canvas>
+                    <ambientLight intensity={1} />
+                    <directionalLight position={[10, 10, 5]} />
+                    
+                    <Center>
+                        {/* suspense digunakan untuk loading object */}
+                        <Suspense fallback={<CanvasLoader />}>
+                            <group scale={2} position={[0, -3, 0]} rotation={[0, -0.1, 0]}>
+                                <DemoComputer />
+                            </group>
+                        </Suspense>
+                    </Center>
+                    <OrbitControls maxPolarAngle={Math.PI / 2} /> 
+                </Canvas>
+            </div>
+
+
+
+MEMBUAT CHAR 3D DENGAN ANIMASI
+    1.  BUAT CHARACTER DI readplayer.me setelah edit anda akan diberikan link .glb
+        paste ke search form maka akan otomatis mendownload.
+    2.  Kunjungi maximo.com di bagian side bar kanan ada tulisan upload avatar/DLL
+        uload .glb tadi.
+    3.  Tapi ini akan error karena maximo hanya menerima file dengan format .fbx
+    4.  Kunjungi konverter .gltf ke .fbx yaitu aspose
+    5.  Aspose merupakan sebuah converter lengkap tapi disini kita hanya akan konversi 3D
+    6.  klik link ini :     https://products.aspose.app/3d/conversion/gltf-to-fbx#google_vignette
+    7.  TInggal upload dan selesai
